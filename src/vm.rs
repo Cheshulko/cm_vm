@@ -1,17 +1,21 @@
 use crate::instruction::Opcode;
 
 pub struct VM {
-    registers: [i32; 32], // 32 = 8bits opcode + 8 register number + 2*8 bits
-    pc: usize,            // program counter that tracks which byte is being executed
-    program: Vec<u8>,     // Bytecode of the program. 8bits for opcode
-    remainder: u32,       // Modulo for Opcode::DIV
-    equal_flag: bool,     // Result of the last comparison operation
+    pub registers: [i32; VM::REGISTERS], // 32 = 8bits opcode + 8 register number + 2*8 bits
+    pc: usize,                           // program counter that tracks which byte is being executed
+    pub program: Vec<u8>,                // Bytecode of the program. 8bits for opcode
+    remainder: u32,                      // Modulo for Opcode::DIV
+    equal_flag: bool,                    // Result of the last comparison operation
+}
+
+impl VM {
+    const REGISTERS: usize = 4; // 32
 }
 
 impl VM {
     pub fn new() -> VM {
         VM {
-            registers: [0; 32],
+            registers: [0; VM::REGISTERS],
             program: vec![],
             pc: 0,
             remainder: 0,
@@ -165,6 +169,11 @@ impl VM {
         }
     }
 
+    pub fn add_byte(&mut self, byte: u8) {
+        self.program.push(byte)
+    }
+
+    // Run 1 instruction: 32bits - 4bytes
     pub fn run_once(&mut self) {
         self.execute_instruction();
     }

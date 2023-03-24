@@ -4,17 +4,13 @@ mod repl;
 mod vm;
 
 use repl::Repl;
-use std::{
-    env,
-    io::{self, Write},
-};
+use std::io::{self, Write};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args: Vec<String> = env::args().collect();
-
     let mut repl = Repl::new();
 
-    main_hex_program(&mut repl)
+    main_program(&mut repl)
+    // main_hex_program(&mut repl)
     // main_hex_lopp(&mut repl)
 }
 
@@ -46,6 +42,21 @@ fn main_hex_program(repl: &mut Repl) -> Result<(), Box<dyn std::error::Error>> {
 
     repl.run_hex_program(hex_program);
 
+    Ok(())
+}
+
+fn main_program(repl: &mut Repl) -> Result<(), Box<dyn std::error::Error>> {
+    // program
+    #[rustfmt::skip]
+    let program: Vec<&str> = vec![
+        ".registers",
+        ".program",
+        "load $1 #1000",   // LOAD $#1 #((0000.0011 << 8) + 1110.1000 = 1000)
+        ".registers",
+        ".commands",
+    ];
+
+    repl.run_program(program);
     Ok(())
 }
 

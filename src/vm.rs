@@ -9,8 +9,8 @@ pub struct VM {
 }
 
 impl VM {
-    const REGISTERS: usize = 4; // 32
-    const SIZE: usize = std::mem::size_of::<u8>() * 8;
+    pub const REGISTERS: usize = 4; // 32
+    pub const SIZE: usize = std::mem::size_of::<u8>() * 8;
     // TODO: u8 const
 }
 

@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 // 8bits opcode
 pub enum Opcode {
     LOAD, // `LOAD $0 #500` Load value into register $0. #500 16 bits

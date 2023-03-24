@@ -10,9 +10,9 @@ pub enum Opcode {
     //
     HLT, // Stop execution
     //
-    JMP,  // `JMP $0`.  Jump to $0 program byte.  Absolute jump
-    JMPF, // `JMPF $0`  Jump forwards by $0.      Relative jump
-    JMPB, // `JMPB $0`  Jump backwards by $0.     Relative jump
+    JMP,  // `JMP $0`.  Jump to $0 program byte.  Absolute jump // TODO: Should it be 18bits ?
+    JMPF, // `JMPF $0`  Jump forwards by $0.      Relative jump // TODO: Should it be 18bits ?
+    JMPB, // `JMPB $0`  Jump backwards by $0.     Relative jump // TODO: Should it be 18bits ?
     //
     EQ,  // `EQ  $0 $1 $unused`  aka ($0 == $1) Save result to `equal_flag`. Equal
     NEQ, // `NEQ $0 $1 $unused`  aka ($0 != $1) Save result to `equal_flag`. Not equal
@@ -21,7 +21,7 @@ pub enum Opcode {
     GTQ, // `GTQ $0 $1 $unused`  aka ($0 >= $1) Save result to `equal_flag`. Greater than OR equal to
     LTQ, // `LTQ $0 $1 $unused`  aka ($0 <= $1) Save result to `equal_flag`. Less than OR equal to
     //
-    JEQ, // `JEQ $0` Jump to $0 if equal (value in `equal_flag` is true)  Absolute jump
+    JEQ, // `JEQ $0` Jump to $0 if equal (`equal_flag` is true)  Absolute jump // TODO: Should it be 18bits ?
     // TODO: JNEQ ???
     //
     IGL, // Illegal

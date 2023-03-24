@@ -3,21 +3,26 @@ use std::num::ParseIntError;
 use crate::vm::VM;
 
 pub struct Repl {
+    commands: Vec<String>,
     vm: VM,
 }
 
 impl Repl {
     pub fn new() -> Repl {
-        Repl { vm: VM::new() }
+        Repl {
+            vm: VM::new(),
+            commands: vec![],
+        }
     }
 
-    pub fn run_program(&mut self, program: Vec<&str>) {
-        program.iter().for_each(|command| {
-            self.execute_command(&command);
+    pub fn run_hex_program(&mut self, hex_program: Vec<&str>) {
+        hex_program.iter().for_each(|command| {
+            self.execute_hex_command(&command);
         });
     }
 
-    pub fn execute_command(&mut self, command: &str) {
+    pub fn execute_hex_command(&mut self, command: &str) {
+        self.commands.push(command.to_string());
         match command {
             ".program" => {
                 println!("Listing instructions currently in VM's program vector:");
@@ -25,6 +30,11 @@ impl Repl {
                     println!("{}", instruction);
                 }
                 println!("End of Program Listing");
+            }
+            ".commands" => {
+                for command in &self.commands {
+                    println!("{}", command);
+                }
             }
             ".registers" => {
                 println!("Listing registers and all contents:");

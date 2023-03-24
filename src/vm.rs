@@ -10,6 +10,8 @@ pub struct VM {
 
 impl VM {
     const REGISTERS: usize = 4; // 32
+    const SIZE: usize = std::mem::size_of::<u8>() * 8;
+    // TODO: u8 const
 }
 
 impl VM {
@@ -40,8 +42,8 @@ impl VM {
         // program[i] = 11010000
         // program[i+1] = 11110011
         // result should be 1101000011110011 (16bits)
-        // TODO: 8 to const.
-        let result = ((self.program[self.pc] as u16) << 8) | self.program[self.pc + 1] as u16;
+        let result =
+            ((self.program[self.pc] as u16) << VM::SIZE) | self.program[self.pc + 1] as u16;
         self.pc += 2;
         return result;
     }

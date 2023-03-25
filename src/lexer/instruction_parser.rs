@@ -7,7 +7,7 @@ use super::operand_parser::*;
 use super::register_parser::*;
 use super::token::Token;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct AssemblerInstruction {
     opcode: Token,
     operand1: Option<Token>,
@@ -17,6 +17,7 @@ pub struct AssemblerInstruction {
 
 impl AssemblerInstruction {
     // TODO
+    #[allow(dead_code)]
     pub fn to_hex(&self) -> Vec<&str> {
         todo!()
     }
@@ -37,14 +38,13 @@ impl AssemblerInstruction {
             }
         };
 
-        for operand in vec![&self.operand1, &self.operand2, &self.operand3] {
-            match operand {
-                Some(token) => self.extract_operand(token, &mut results),
-                None => {}
+        for operand in &[&self.operand1, &self.operand2, &self.operand3] {
+            if let Some(token) = operand {
+                self.extract_operand(token, &mut results)
             }
         }
 
-        return results;
+        results
     }
 
     fn extract_operand(&self, token: &Token, results: &mut Vec<u8>) {
@@ -58,7 +58,7 @@ impl AssemblerInstruction {
                 // Invert to vm::VM::next_16_bits
                 let byte2 = converted >> vm::VM::SIZE; // Take 8 higher
                 results.push(byte2 as u8);
-                results.push(byte1 as u8); // Note: Conver here u16->u18 just throws 8 higher bits and take lower
+                results.push(byte1 as u8); // Note: Convert here u16->u18 just throws 8 higher bits and take lower
             }
             _ => {
                 println!("Opcode found in operand field");

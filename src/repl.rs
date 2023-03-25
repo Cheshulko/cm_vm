@@ -44,7 +44,7 @@ impl Repl {
 
     pub fn run_hex_program(&mut self, hex_program: Vec<&str>) {
         hex_program.iter().for_each(|command| {
-            self.execute_hex_command(&command);
+            self.execute_hex_command(command);
         });
     }
 
@@ -108,8 +108,8 @@ impl Repl {
         let mut results: Vec<u8> = vec![];
 
         let byte_results = input
-            .split(" ")
-            .map(|hex_str| u8::from_str_radix(&hex_str, 16));
+            .split(' ')
+            .map(|hex_str| u8::from_str_radix(hex_str, 16));
 
         for byte_result in byte_results {
             match byte_result {

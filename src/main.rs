@@ -1,3 +1,5 @@
+#![deny(clippy::all)]
+
 mod instruction;
 mod lexer;
 mod repl;
@@ -14,6 +16,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // main_hex_lopp(&mut repl)
 }
 
+#[allow(dead_code)]
 fn main_hex_lopp(repl: &mut Repl) -> Result<(), Box<dyn std::error::Error>> {
     loop {
         let stdin = io::stdin();
@@ -29,6 +32,7 @@ fn main_hex_lopp(repl: &mut Repl) -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
+#[allow(dead_code)]
 fn main_hex_program(repl: &mut Repl) -> Result<(), Box<dyn std::error::Error>> {
     // HEX program
     #[rustfmt::skip]

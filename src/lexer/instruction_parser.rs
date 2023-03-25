@@ -1,5 +1,6 @@
-use nom::{alpha1, do_parse, named, opt, types::CompleteStr};
+use log::error;
 use nom::{alt, multispace};
+use nom::{do_parse, named, opt, types::CompleteStr};
 
 use crate::vm;
 
@@ -17,24 +18,40 @@ pub struct AssemblerInstruction {
 }
 
 impl AssemblerInstruction {
-    // TODO
-    #[allow(dead_code)]
-    pub fn to_hex(&self) -> Vec<&str> {
-        todo!()
+    pub fn to_hex(&self) -> Vec<String> {
+        let mut results: Vec<String> = vec![];
+        match self.opcode {
+            Token::Op { code } => {
+                // TODO: Fix this conversion
+                let bytes = code as u8;
+                let hex = format!("{:02x?}", bytes);
+                results.push(hex);
+            }
+            _ => {
+                error!("Non-opcode found in opcode field");
+                std::process::exit(1);
+            }
+        };
+
+        for operand in &[&self.operand1, &self.operand2, &self.operand3] {
+            if let Some(token) = operand {
+                self.extract_hex_operand(token, &mut results);
+            }
+        }
+
+        results
     }
+
     // From AssemblerInstruction to bytes
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut results = vec![];
         match self.opcode {
-            Token::Op { code } => match code {
-                // TODO: load, add, etc
-                _ => {
-                    // TODO: Fix this conversion
-                    results.push(code as u8);
-                }
-            },
+            Token::Op { code } => {
+                // TODO: Fix this conversion
+                results.push(code as u8);
+            }
             _ => {
-                println!("Non-opcode found in opcode field");
+                error!("Non-opcode found in opcode field");
                 std::process::exit(1);
             }
         };
@@ -48,6 +65,29 @@ impl AssemblerInstruction {
         results
     }
 
+    // Token -> hex
+    fn extract_hex_operand(&self, token: &Token, hex_results: &mut Vec<String>) {
+        match token {
+            Token::Register { reg_num } => {
+                let hex = format!("{:02x?}", *reg_num);
+                hex_results.push(hex);
+            }
+            Token::Number { value } => {
+                let converted = *value as u16;
+                let hex1 = format!("{:02x?}", converted as u8);
+                let hex2 = format!("{:02x?}", (converted >> vm::VM::SIZE) as u8);
+
+                hex_results.push(hex2);
+                hex_results.push(hex1);
+            }
+            _ => {
+                error!("Opcode found in operand field");
+                std::process::exit(1);
+            }
+        };
+    }
+
+    // Token -> u8
     fn extract_operand(&self, token: &Token, results: &mut Vec<u8>) {
         match token {
             Token::Register { reg_num } => {
@@ -55,14 +95,14 @@ impl AssemblerInstruction {
             }
             Token::Number { value } => {
                 let converted = *value as u16;
-                let byte1 = converted;
+                let byte1 = converted as u8;
                 // Invert to vm::VM::next_16_bits
-                let byte2 = converted >> vm::VM::SIZE; // Take 8 higher
-                results.push(byte2 as u8);
-                results.push(byte1 as u8); // Note: Convert here u16->u18 just throws 8 higher bits and take lower
+                let byte2 = (converted >> vm::VM::SIZE) as u8; // Take 8 higher
+                results.push(byte2);
+                results.push(byte1); // Note: Convert here u16->u18 just throws 8 higher bits and take lower
             }
             _ => {
-                println!("Opcode found in operand field");
+                error!("Opcode found in operand field");
                 std::process::exit(1);
             }
         };

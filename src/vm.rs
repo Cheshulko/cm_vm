@@ -1,3 +1,5 @@
+use log::{debug, error, info};
+
 use crate::instruction::Opcode;
 
 pub struct VM {
@@ -49,12 +51,12 @@ impl VM {
     }
 
     fn execute_instruction(&mut self) -> bool /* Is done */ {
-        println!("[VM] pc: {}", self.pc);
+        debug!("pc: {}", self.pc);
         if self.pc >= self.program.len() {
             return true;
         }
         let decoded_opcode = self.decode_opcode();
-        println!("[VM] Opcode: {:?}", decoded_opcode);
+        debug!("Opcode: {:?}", decoded_opcode);
         match decoded_opcode {
             Opcode::LOAD => {
                 let register = self.next_8_bits() as usize;
@@ -161,11 +163,11 @@ impl VM {
             }
             //
             Opcode::HLT => {
-                println!("HLT encountered");
+                info!("HLT encountered");
                 true
             }
             _ => {
-                println!("Unrecognized opcode found! Terminating!");
+                error!("Unrecognized opcode found! Terminating!");
                 true
             }
         }

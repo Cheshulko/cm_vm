@@ -8,7 +8,14 @@ mod vm;
 use repl::Repl;
 use std::io::{self, Write};
 
+use log::LevelFilter;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::builder()
+        .filter_level(LevelFilter::Debug)
+        .format_timestamp(None)
+        .init();
+
     let mut repl = Repl::new();
 
     main_program(&mut repl)

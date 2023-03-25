@@ -1,5 +1,7 @@
 use std::num::ParseIntError;
 
+use log::{debug, error, info};
+
 use crate::{lexer::lexer::Lexer, vm::VM};
 
 pub struct Repl {
@@ -17,7 +19,7 @@ impl Repl {
 
     pub fn run_program(&mut self, program: Vec<&str>) {
         for command in &program {
-            println!("[..] Running command: {}", command);
+            info!("Running command: {}", command);
             if self.is_directive(command) {
                 self.run_directive(command);
             } else {
@@ -32,14 +34,20 @@ impl Repl {
         match parsed_program {
             Ok(instruction) => {
                 let bytes_command = instruction.to_bytes();
-                println!("[RE] Bytes command {:?}", bytes_command);
+
+                // Dont need this part. For test
+                let hex_command = instruction.to_hex();
+                debug!("Hex: {}", hex_command.join(" "));
+                //
+
+                debug!("Bytes command {:?}", bytes_command);
                 for byte in bytes_command {
                     self.vm.add_byte(byte)
                 }
                 self.vm.run_once();
             }
             Err(_) => {
-                println!("Unable to decode command string")
+                error!("Unable to decode command string")
             }
         }
     }
@@ -64,7 +72,7 @@ impl Repl {
                     }
                 }
                 Err(_e) => {
-                    println!(
+                    error!(
                         "Unable to decode hex string. Please enter 4 groups of 2 hex characters."
                     )
                 }
@@ -80,27 +88,27 @@ impl Repl {
     fn run_directive(&mut self, command: &str) {
         match command {
             ".program" => {
-                println!("Listing instructions currently in VM's program vector:");
+                info!("Listing instructions currently in VM's program vector:");
                 for instruction in &self.vm.program {
-                    println!("{}", instruction);
+                    info!("{}", instruction);
                 }
-                println!("End of Program Listing");
+                info!("End of Program Listing");
             }
             ".commands" => {
                 for command in &self.commands {
-                    println!("{}", command);
+                    info!("{}", command);
                 }
             }
             ".registers" => {
-                println!("Listing registers and all contents:");
-                println!("{:#?}", self.vm.registers);
-                println!("End of Register Listing")
+                info!("Listing registers and all contents:");
+                info!("{:#?}", self.vm.registers);
+                info!("End of Register Listing")
             }
             ".equal_flag" => {
-                println!("Equal flag: {}", self.vm.equal_flag);
+                info!("Equal flag: {}", self.vm.equal_flag);
             }
             ".quit" => {
-                println!("Farewell! Have a great day!");
+                info!("Farewell! Have a great day!");
                 std::process::exit(0);
             }
             _ => {}

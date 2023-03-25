@@ -1,3 +1,4 @@
+use log::{debug, info};
 use nom::{do_parse, many1, named, types::CompleteStr};
 
 use super::instruction_parser::{instruction, AssemblerInstruction};
@@ -29,7 +30,7 @@ impl Lexer {
 
         match parsed {
             Ok(instruction_result) => {
-                println!("[LX] Parsed {:?}", instruction_result.1);
+                debug!("Parsed {:?}", instruction_result.1);
                 if instruction_result.0.is_empty() {
                     Ok(instruction_result.1)
                 } else {
@@ -75,6 +76,5 @@ mod tests {
         let (_, program) = result.unwrap();
         let bytecode = program.to_bytes();
         assert_eq!(bytecode.len(), 4);
-        println!("{:?}", bytecode);
     }
 }

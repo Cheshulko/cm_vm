@@ -56,6 +56,19 @@ fn main_program(repl: &mut Repl) -> Result<(), Box<dyn std::error::Error>> {
         ".registers",
         ".program",
         "load $1 #1000",   // LOAD $#1 #((0000.0011 << 8) + 1110.1000 = 1000)
+        "load $0 #999",
+            
+        "add $0 $1 $2",
+        "sub $1 $0 $1",
+        
+        "load $3 #4",
+        "jmpf $3",         // TODO: Need to fix jump. Now it jump $3 bytes. 
+        "sub $2 $0 $2",
+
+        "load $4 #4",
+        "eq $3 $4 $4",
+        ".equal_flag",
+        
         ".registers",
         ".commands",
     ];

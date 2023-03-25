@@ -17,6 +17,7 @@ impl Repl {
 
     pub fn run_program(&mut self, program: Vec<&str>) {
         for command in &program {
+            println!("[..] Running command: {}", command);
             if self.is_directive(command) {
                 self.run_directive(command);
             } else {
@@ -31,6 +32,7 @@ impl Repl {
         match parsed_program {
             Ok(instruction) => {
                 let bytes_command = instruction.to_bytes();
+                println!("[RE] Bytes command {:?}", bytes_command);
                 for byte in bytes_command {
                     self.vm.add_byte(byte)
                 }
@@ -93,6 +95,9 @@ impl Repl {
                 println!("Listing registers and all contents:");
                 println!("{:#?}", self.vm.registers);
                 println!("End of Register Listing")
+            }
+            ".equal_flag" => {
+                println!("Equal flag: {}", self.vm.equal_flag);
             }
             ".quit" => {
                 println!("Farewell! Have a great day!");

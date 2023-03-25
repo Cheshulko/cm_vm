@@ -1,6 +1,6 @@
 use nom::{do_parse, many1, named, types::CompleteStr};
 
-use super::instruction_parser::{instruction_one, AssemblerInstruction};
+use super::instruction_parser::{instruction, AssemblerInstruction};
 
 #[derive(Debug, PartialEq, Eq)]
 // TODO: Dont like it. Rename
@@ -25,10 +25,11 @@ impl Lexer {
     }
 
     pub fn parse_instruction(input_instruction: &str) -> Result<AssemblerInstruction, ()> {
-        let parsed = instruction_one(CompleteStr(input_instruction));
+        let parsed = instruction(CompleteStr(input_instruction));
 
         match parsed {
             Ok(instruction_result) => {
+                println!("[LX] Parsed {:?}", instruction_result.1);
                 if instruction_result.0.is_empty() {
                     Ok(instruction_result.1)
                 } else {
@@ -50,7 +51,7 @@ impl Lexer {
 // Root of parsing. Private
 // TODO: Not finished yet
 named!(program<CompleteStr, Lexer>, do_parse!(
-    instructions: many1!(instruction_one) >> (Lexer {
+    instructions: many1!(instruction) >> (Lexer {
         instructions
     })
 ));

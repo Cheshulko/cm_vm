@@ -5,11 +5,11 @@ pub struct VM {
     pc: usize,                           // program counter that tracks which byte is being executed
     pub program: Vec<u8>,                // Bytecode of the program. 8bits for opcode
     remainder: u32,                      // Modulo for Opcode::DIV
-    equal_flag: bool,                    // Result of the last comparison operation
+    pub equal_flag: bool,                // Result of the last comparison operation
 }
 
 impl VM {
-    pub const REGISTERS: usize = 4; // 32
+    pub const REGISTERS: usize = 6; // 32
     pub const SIZE: usize = std::mem::size_of::<u8>() * 8;
     // TODO: u8 const
 }
@@ -49,11 +49,12 @@ impl VM {
     }
 
     fn execute_instruction(&mut self) -> bool /* Is done */ {
+        println!("[VM] pc: {}", self.pc);
         if self.pc >= self.program.len() {
             return true;
         }
         let decoded_opcode = self.decode_opcode();
-        println!("decoded_opcode: {:?}", decoded_opcode);
+        println!("[VM] Opcode: {:?}", decoded_opcode);
         match decoded_opcode {
             Opcode::LOAD => {
                 let register = self.next_8_bits() as usize;
@@ -96,7 +97,6 @@ impl VM {
             }
             Opcode::JMPF => {
                 let value = self.registers[self.next_8_bits() as usize];
-                println!("{} {}", self.pc, value);
                 self.pc += value as usize;
                 // TODO: `Eat 8+8bits ??`
                 false

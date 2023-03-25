@@ -1,4 +1,5 @@
-use nom::{do_parse, named, opt, types::CompleteStr};
+use nom::{alpha1, do_parse, named, opt, types::CompleteStr};
+use nom::{alt, multispace};
 
 use crate::vm;
 
@@ -68,18 +69,19 @@ impl AssemblerInstruction {
     }
 }
 
-// LOAD $0 #100
-named!(pub instruction_one<CompleteStr, AssemblerInstruction>,
+named!(pub instruction<CompleteStr, AssemblerInstruction>,
     do_parse!(
-        o: opcode_load >>
-        r: opt!(register) >>
-        i: opt!(integer_operand) >>
+        o: opcode >>
+        r1: opt!(register) >>
+        r2: opt!(alt!(register | integer_operand)) >>
+        r3: opt!(alt!(register | integer_operand)) >>
+        opt!(multispace) >>
         (
             AssemblerInstruction{
                 opcode: o,
-                operand1: r,
-                operand2: i,
-                operand3: None
+                operand1: r1,
+                operand2: r2,
+                operand3: r3
             }
         )
     )
@@ -90,8 +92,8 @@ mod tests {
     use crate::instruction::Opcode;
 
     #[test]
-    fn test_parse_instruction_form_one() {
-        let result = instruction_one(CompleteStr("load $0 #100\n"));
+    fn test_parse_instruction_load() {
+        let result = instruction(CompleteStr("load $0 #100\n"));
         assert_eq!(
             result,
             Ok((
@@ -100,6 +102,77 @@ mod tests {
                     opcode: Token::Op { code: Opcode::LOAD },
                     operand1: Some(Token::Register { reg_num: 0 }),
                     operand2: Some(Token::Number { value: 100 }),
+                    operand3: None
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_parse_instruction_add() {
+        let result = instruction(CompleteStr("add $0 $5 $2\n"));
+        assert_eq!(
+            result,
+            Ok((
+                CompleteStr(""),
+                AssemblerInstruction {
+                    opcode: Token::Op { code: Opcode::ADD },
+                    operand1: Some(Token::Register { reg_num: 0 }),
+                    operand2: Some(Token::Register { reg_num: 5 }),
+                    operand3: Some(Token::Register { reg_num: 2 }),
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_parse_instruction_jumpf() {
+        let result = instruction(CompleteStr("jmpf $1\n"));
+        assert_eq!(
+            result,
+            Ok((
+                CompleteStr(""),
+                AssemblerInstruction {
+                    opcode: Token::Op { code: Opcode::JMPF },
+                    operand1: Some(Token::Register { reg_num: 1 }),
+                    operand2: None,
+                    operand3: None,
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_parse_instruction_eq() {
+        let result = instruction(CompleteStr("eq $0 $1 $2\n"));
+        assert_eq!(
+            result,
+            Ok((
+                CompleteStr(""),
+                AssemblerInstruction {
+                    opcode: Token::Op { code: Opcode::EQ },
+                    operand1: Some(Token::Register { reg_num: 0 }),
+                    operand2: Some(Token::Register { reg_num: 1 }),
+                    operand3: Some(Token::Register { reg_num: 2 })
+                }
+            ))
+        );
+    }
+
+    // TODO: Add tests for other commands
+    // NEQ -- LTQ
+
+    #[test]
+    fn test_parse_instruction_hlt() {
+        let result = instruction(CompleteStr("hlt\n"));
+        assert_eq!(
+            result,
+            Ok((
+                CompleteStr(""),
+                AssemblerInstruction {
+                    opcode: Token::Op { code: Opcode::HLT },
+                    operand1: None,
+                    operand2: None,
                     operand3: None
                 }
             ))

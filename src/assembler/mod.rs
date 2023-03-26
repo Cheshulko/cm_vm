@@ -10,12 +10,11 @@ mod register_parser;
 mod token;
 
 #[derive(Debug, PartialEq, Eq)]
-// TODO: Dont like it. Rename
-pub struct Lexer {
+pub struct Assembler {
     instructions: Vec<AssemblerInstruction>,
 }
 
-impl Lexer {
+impl Assembler {
     // TODO
     #[allow(dead_code)]
     pub fn to_hex(&self) -> Vec<&str> {
@@ -50,15 +49,15 @@ impl Lexer {
     // TODO
     #[allow(dead_code)]
     #[allow(unused)]
-    pub fn parse_program(input_program: &[&str]) -> Lexer {
+    pub fn parse_program(input_program: &[&str]) -> Assembler {
         todo!();
     }
 }
 
 // Root of parsing. Private
 // TODO: Not finished yet
-named!(program<CompleteStr, Lexer>, do_parse!(
-    instructions: many1!(instruction) >> (Lexer {
+named!(program<CompleteStr, Assembler>, do_parse!(
+    instructions: many1!(instruction) >> (Assembler {
         instructions
     })
 ));

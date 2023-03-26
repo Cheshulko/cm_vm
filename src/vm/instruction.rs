@@ -23,6 +23,7 @@ pub enum Opcode {
     //
     JEQ, // `JEQ $0` Jump to $0 if equal (`equal_flag` is true)  Absolute jump // TODO: Should it be 18bits ?
     // TODO: JNEQ ???
+    ALOC, // `ALOC $0` Allocate $0 bytes of memory in the heap
     //
     IGL, // Illegal
 }
@@ -50,7 +51,9 @@ impl From<u8> for Opcode {
             13 => Opcode::GTQ,
             14 => Opcode::LTQ,
             //
-            15 => Opcode::JEQ,
+            15 => Opcode::ALOC,
+            //
+            16 => Opcode::JEQ,
             //
             _ => Opcode::IGL,
         }

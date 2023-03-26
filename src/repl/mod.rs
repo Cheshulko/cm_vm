@@ -2,7 +2,7 @@ use std::num::ParseIntError;
 
 use log::{debug, error, info};
 
-use crate::{lexer::Lexer, vm::VM};
+use crate::{assembler::Assembler, vm::VM};
 
 pub struct Repl {
     commands: Vec<String>,
@@ -29,7 +29,7 @@ impl Repl {
     }
 
     pub fn execute_command(&mut self, command: &str) {
-        let parsed_program = Lexer::parse_instruction(command);
+        let parsed_program = Assembler::parse_instruction(command);
 
         match parsed_program {
             Ok(instruction) => {

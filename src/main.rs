@@ -1,6 +1,6 @@
 #![deny(clippy::all)]
 
-mod lexer;
+mod assembler;
 mod repl;
 mod vm;
 

@@ -1,6 +1,7 @@
+use instruction::Opcode;
 use log::{debug, error, info};
 
-use crate::instruction::Opcode;
+pub mod instruction;
 
 pub struct VM {
     pub registers: [i32; VM::REGISTERS], // 32 = 8bits opcode + 8 register number + 2*8 bits

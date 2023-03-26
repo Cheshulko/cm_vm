@@ -2,7 +2,7 @@ use std::num::ParseIntError;
 
 use log::{debug, error, info};
 
-use crate::{lexer::lexer::Lexer, vm::VM};
+use crate::{lexer::Lexer, vm::VM};
 
 pub struct Repl {
     commands: Vec<String>,

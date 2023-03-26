@@ -1,5 +1,5 @@
 use super::token::Token;
-use crate::instruction::Opcode;
+use crate::vm::instruction::Opcode;
 
 use nom::{alpha1, do_parse, named, types::CompleteStr};
 

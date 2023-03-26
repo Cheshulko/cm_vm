@@ -1,4 +1,4 @@
-use crate::instruction::Opcode;
+use crate::vm::instruction::Opcode;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Token {

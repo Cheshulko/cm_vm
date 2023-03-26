@@ -2,7 +2,7 @@ use log::error;
 use nom::{alt, multispace};
 use nom::{do_parse, named, opt, types::CompleteStr};
 
-use crate::vm;
+use crate::vm::{self, VM};
 
 use super::opcode_parser::*;
 use super::operand_parser::*;
@@ -75,7 +75,7 @@ impl AssemblerInstruction {
             Token::Number { value } => {
                 let converted = *value as u16;
                 let hex1 = format!("{:02x?}", converted as u8);
-                let hex2 = format!("{:02x?}", (converted >> vm::VM::SIZE) as u8);
+                let hex2 = format!("{:02x?}", (converted >> VM::SIZE) as u8);
 
                 hex_results.push(hex2);
                 hex_results.push(hex1);
@@ -129,7 +129,7 @@ named!(pub instruction<CompleteStr, AssemblerInstruction>,
 
 mod tests {
     use super::*;
-    use crate::instruction::Opcode;
+    use crate::vm::instruction::Opcode;
 
     #[test]
     fn test_parse_instruction_load() {

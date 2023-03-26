@@ -29,10 +29,12 @@ impl<'a> From<CompleteStr<'a>> for Opcode {
 }
 
 named!(pub opcode<CompleteStr, Token>,
-    do_parse!(opcode: alpha1 >> (Token::Op{
-        code: Opcode::from(opcode)
-    })
-));
+    do_parse!(
+        opcode: alpha1 >> (Token::Op {
+            code: Opcode::from(opcode)
+        })
+    )
+);
 
 mod tests {
     use super::*;

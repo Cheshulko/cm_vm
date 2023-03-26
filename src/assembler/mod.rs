@@ -3,6 +3,7 @@ use nom::{do_parse, many1, named, types::CompleteStr};
 
 use instruction_parser::{instruction, AssemblerInstruction};
 
+mod directive_parser;
 mod instruction_parser;
 mod opcode_parser;
 mod operand_parser;

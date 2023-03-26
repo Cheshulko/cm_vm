@@ -43,15 +43,14 @@ fn main_hex_program(repl: &mut Repl) -> Result<(), Box<dyn std::error::Error>> {
     // HEX program
     #[rustfmt::skip]
     let hex_program: Vec<&str> = vec![
-        ".registers",
-        ".program",
+        ",registers",
+        ",program",
         "00 01 03 E8",   // LOAD $#1 #((0000.0011 << 8) + 1110.1000 = 1000)
-        ".registers",
-        ".commands",
+        ",registers",
+        ",commands",
     ];
 
     repl.run_hex_program(hex_program);
-
     Ok(())
 }
 
@@ -59,8 +58,8 @@ fn main_program(repl: &mut Repl) -> Result<(), Box<dyn std::error::Error>> {
     // program
     #[rustfmt::skip]
     let program: Vec<&str> = vec![
-        ".registers",
-        ".program",
+        ",registers",
+        ",program",
         "load $1 #1000",   // LOAD $#1 #((0000.0011 << 8) + 1110.1000 = 1000)
         "load $0 #999",
             
@@ -73,10 +72,10 @@ fn main_program(repl: &mut Repl) -> Result<(), Box<dyn std::error::Error>> {
 
         "load $4 #4",
         "eq $3 $4 $4",
-        ".equal_flag",
+        ",equal_flag",
         
-        ".registers",
-        ".commands",
+        ",registers",
+        ",commands",
     ];
 
     repl.run_program(program);

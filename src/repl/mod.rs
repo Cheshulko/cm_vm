@@ -18,14 +18,27 @@ impl Repl {
     }
 
     pub fn run_program(&mut self, program: Vec<&str>) {
-        for command in &program {
+        program.iter().for_each(|command| {
+            self.commands.push(command.to_string());
             info!("Running command: {}", command);
-            if self.is_directive(command) {
-                self.run_directive(command);
+            if self.is_debug_directive(command) {
+                self.run_debug_directive(command);
             } else {
                 self.execute_command(command);
             }
-        }
+        });
+    }
+
+    pub fn run_hex_program(&mut self, hex_program: Vec<&str>) {
+        hex_program.iter().for_each(|command| {
+            self.commands.push(command.to_string());
+            info!("Running hex_command: {}", command);
+            if self.is_debug_directive(command) {
+                self.run_debug_directive(command);
+            } else {
+                self.execute_hex_command(command);
+            }
+        });
     }
 
     pub fn execute_command(&mut self, command: &str) {
@@ -52,62 +65,48 @@ impl Repl {
         }
     }
 
-    pub fn run_hex_program(&mut self, hex_program: Vec<&str>) {
-        hex_program.iter().for_each(|command| {
-            self.execute_hex_command(command);
-        });
-    }
-
-    /* or directive */
     pub fn execute_hex_command(&mut self, command: &str) {
-        self.commands.push(command.to_string());
-        if self.is_directive(command) {
-            self.run_directive(command);
-        } else {
-            let results = self.parse_hex(command);
-            match results {
-                Ok(bytes) => {
-                    for byte in bytes {
-                        self.vm.add_byte(byte)
-                    }
+        let results = self.parse_hex(command);
+        match results {
+            Ok(bytes) => {
+                for byte in bytes {
+                    self.vm.add_byte(byte)
                 }
-                Err(_e) => {
-                    error!(
-                        "Unable to decode hex string. Please enter 4 groups of 2 hex characters."
-                    )
-                }
-            };
-            self.vm.run_once();
-        }
+            }
+            Err(_e) => {
+                error!("Unable to decode hex string. Please enter 4 groups of 2 hex characters.")
+            }
+        };
+        self.vm.run_once();
     }
 
-    fn is_directive(&self, command: &str) -> bool {
-        command.starts_with('.')
+    fn is_debug_directive(&self, command: &str) -> bool {
+        command.starts_with(',')
     }
 
-    fn run_directive(&mut self, command: &str) {
+    fn run_debug_directive(&mut self, command: &str) {
         match command {
-            ".program" => {
+            ",program" => {
                 info!("Listing instructions currently in VM's program vector:");
                 for instruction in &self.vm.program {
                     info!("{}", instruction);
                 }
                 info!("End of Program Listing");
             }
-            ".commands" => {
+            ",commands" => {
                 for command in &self.commands {
                     info!("{}", command);
                 }
             }
-            ".registers" => {
+            ",registers" => {
                 info!("Listing registers and all contents:");
                 info!("{:#?}", self.vm.registers);
                 info!("End of Register Listing")
             }
-            ".equal_flag" => {
+            ",equal_flag" => {
                 info!("Equal flag: {}", self.vm.equal_flag);
             }
-            ".quit" => {
+            ",quit" => {
                 info!("Farewell! Have a great day!");
                 std::process::exit(0);
             }

@@ -357,7 +357,7 @@ mod tests {
     fn test_aloc_opcode() {
         let mut test_vm = VM::new();
         test_vm.registers[0] = 1024;
-        test_vm.program = vec![15, 0, 0, 0];
+        test_vm.program = vec![16, 0, 0, 0];
         test_vm.run_once();
         assert_eq!(test_vm.heap.len(), 1024);
     }

@@ -1,28 +1,31 @@
 use log::error;
-use nom::{alt, multispace};
-use nom::{do_parse, named, opt, types::CompleteStr};
+use nom::alt;
+use nom::{do_parse, multispace, named, opt, types::CompleteStr};
 
 use crate::vm::{self, VM};
 
+use super::directive_parser::directive;
 use super::opcode_parser::*;
 use super::operand_parser::*;
 use super::register_parser::*;
 use super::token::Token;
 
 #[derive(Debug, PartialEq, Eq)]
+#[rustfmt::skip]
 pub struct AssemblerInstruction {
-    opcode: Token,
-    operand1: Option<Token>,
-    operand2: Option<Token>,
-    operand3: Option<Token>,
+    pub(crate) opcode:      Option<Token>,
+    pub(crate) label:       Option<Token>,
+    pub(crate) directive:   Option<Token>,
+    pub(crate) operand1:    Option<Token>,
+    pub(crate) operand2:    Option<Token>,
+    pub(crate) operand3:    Option<Token>,
 }
 
 impl AssemblerInstruction {
     pub fn to_hex(&self) -> Vec<String> {
         let mut results: Vec<String> = vec![];
         match self.opcode {
-            Token::Op { code } => {
-                // TODO: Fix this conversion
+            Some(Token::Op { code }) => {
                 let bytes = code as u8;
                 let hex = format!("{:02x?}", bytes);
                 results.push(hex);
@@ -46,8 +49,7 @@ impl AssemblerInstruction {
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut results = vec![];
         match self.opcode {
-            Token::Op { code } => {
-                // TODO: Fix this conversion
+            Some(Token::Op { code }) => {
                 results.push(code as u8);
             }
             _ => {
@@ -111,14 +113,31 @@ impl AssemblerInstruction {
 
 named!(pub instruction<CompleteStr, AssemblerInstruction>,
     do_parse!(
-        o: opcode >>
+        ins: alt!(instruction_pure | directive) >>
+        (
+            ins
+        )
+    )
+);
+
+/*
+<opcode>
+<opcode> <register | integer_operand>
+<opcode> <register | integer_operand> <register | integer_operand>
+<opcode> <register | integer_operand> <register | integer_operand> <register | integer_operand>
+*/
+named!(pub instruction_pure<CompleteStr, AssemblerInstruction>,
+    do_parse!(
+        o:  opcode >>
         r1: opt!(register) >>
         r2: opt!(alt!(register | integer_operand)) >>
         r3: opt!(alt!(register | integer_operand)) >>
         opt!(multispace) >>
         (
             AssemblerInstruction{
-                opcode: o,
+                opcode: Some(o),
+                directive: None,
+                label: None,
                 operand1: r1,
                 operand2: r2,
                 operand3: r3
@@ -139,7 +158,9 @@ mod tests {
             Ok((
                 CompleteStr(""),
                 AssemblerInstruction {
-                    opcode: Token::Op { code: Opcode::LOAD },
+                    opcode: Some(Token::Op { code: Opcode::LOAD }),
+                    directive: None,
+                    label: None,
                     operand1: Some(Token::Register { reg_num: 0 }),
                     operand2: Some(Token::Number { value: 100 }),
                     operand3: None
@@ -156,7 +177,9 @@ mod tests {
             Ok((
                 CompleteStr(""),
                 AssemblerInstruction {
-                    opcode: Token::Op { code: Opcode::ADD },
+                    opcode: Some(Token::Op { code: Opcode::ADD }),
+                    directive: None,
+                    label: None,
                     operand1: Some(Token::Register { reg_num: 0 }),
                     operand2: Some(Token::Register { reg_num: 5 }),
                     operand3: Some(Token::Register { reg_num: 2 }),
@@ -173,7 +196,9 @@ mod tests {
             Ok((
                 CompleteStr(""),
                 AssemblerInstruction {
-                    opcode: Token::Op { code: Opcode::JMPF },
+                    opcode: Some(Token::Op { code: Opcode::JMPF }),
+                    directive: None,
+                    label: None,
                     operand1: Some(Token::Register { reg_num: 1 }),
                     operand2: None,
                     operand3: None,
@@ -190,7 +215,9 @@ mod tests {
             Ok((
                 CompleteStr(""),
                 AssemblerInstruction {
-                    opcode: Token::Op { code: Opcode::EQ },
+                    opcode: Some(Token::Op { code: Opcode::EQ }),
+                    directive: None,
+                    label: None,
                     operand1: Some(Token::Register { reg_num: 0 }),
                     operand2: Some(Token::Register { reg_num: 1 }),
                     operand3: Some(Token::Register { reg_num: 2 })
@@ -210,7 +237,9 @@ mod tests {
             Ok((
                 CompleteStr(""),
                 AssemblerInstruction {
-                    opcode: Token::Op { code: Opcode::HLT },
+                    opcode: Some(Token::Op { code: Opcode::HLT }),
+                    directive: None,
+                    label: None,
                     operand1: None,
                     operand2: None,
                     operand3: None

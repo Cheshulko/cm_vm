@@ -25,6 +25,9 @@ pub enum Opcode {
     // TODO: JNEQ ???
     ALOC, // `ALOC $0` Allocate $0 bytes of memory in the heap
     //
+    // TODO: INC `INC $0` Inc $0 register value by 1
+    // TODO: DEC `DEC $0` Dec $0 register value by 1
+    //
     IGL, // Illegal
 }
 
@@ -51,9 +54,9 @@ impl From<u8> for Opcode {
             13 => Opcode::GTQ,
             14 => Opcode::LTQ,
             //
-            15 => Opcode::ALOC,
+            15 => Opcode::JEQ,
             //
-            16 => Opcode::JEQ,
+            16 => Opcode::ALOC,
             //
             _ => Opcode::IGL,
         }
